@@ -1,0 +1,46 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity UnsignedNBitMultiplier_TB is
+end entity;
+
+architecture UnsignedNBitMultiplier_TB_arch of UnsignedNBitMultiplier_TB is
+    
+    constant n : integer := 32; -- # of Bits in Multiplier
+
+
+    signal A_TB, B_TB : std_logic_vector( (n-1) downto 0);
+    signal P_TB : std_logic_vector( ((n*2)-1) downto 0);
+
+    component UnsignedNBitMultiplier
+        port(
+            i_A : in std_logic_vector( (n-1) downto 0);
+            i_B : in std_logic_vector( (n-1) downto 0);
+            o_prod : out std_logic_vector( ((n*2)-1) downto 0)
+        );
+    
+    end component;
+
+    begin
+    
+    DUT : UnsignedNBitMultiplier port map(
+            i_A => A_TB, 
+            i_B => B_TB,
+            o_prod => P_TB);
+    
+    STIM: process
+	    begin
+		
+		A_TB <= std_logic_vector(to_unsigned(2147483647,n));
+		B_TB <= std_logic_vector(to_unsigned(2,n));
+		wait for 70 ns;
+		
+		--  4 * 2 
+		A_TB <= std_logic_vector(to_unsigned(4,n));
+		B_TB <= std_logic_vector(to_unsigned(2,n));
+		wait for 70 ns;
+    end process;
+    
+end architecture;
+
