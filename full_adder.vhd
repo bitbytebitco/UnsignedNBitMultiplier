@@ -20,8 +20,7 @@ architecture full_adder_arch of full_adder is
     end component;
 
     begin
-    	HA0 : half_adder port map(fa_A, fa_B, S0, C0);
-	HA1 : half_adder port map(S0, fa_Cin, fa_Sum, C1);
-
-	fa_Cout <= C0 or C1 after 1 ps;
+        HA0 : half_adder port map(fa_A, fa_B, S0, C0);
+        HA1 : half_adder port map(S0, fa_Cin, fa_Sum, C1);
+        fa_Cout <= C0 or C1;
 end architecture;
