@@ -1,3 +1,15 @@
+----------------------------------------------------------------------
+-- File name   : UnsignedNBitMultiplier.vhd
+--
+-- Project     : UnsignedNBitMultiplier
+--
+-- Description : An Unsigned Integer Multiplier of N-bit length, which
+--               can be spec'd through the generic param. `bits_wide`
+--
+-- Author(s)   : Zachary Becker
+--               bitbytebitco@gmail.com
+----------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -47,12 +59,12 @@ architecture UnsignedNBitMultiplier_arch of UnsignedNBitMultiplier is
                         uu : full_adder port map (fa_A => ands(1), fa_B => ands(n), fa_Cin => '0', fa_Sum => sums(0), fa_Cout => c(0) );
                     end generate;
                     l0a1 : if (l>0 and l <= (n-2)) generate -- middle columns 
-                        uu : full_adder port map (fa_A => ands(1+1), fa_B => ands(n+l), fa_Cin => c(l-1), fa_Sum => sums(l), fa_Cout => c(l) );       
+                        uu : full_adder port map (fa_A => ands(l+1), fa_B => ands(n+l), fa_Cin => c(l-1), fa_Sum => sums(l), fa_Cout => c(l) );       
                     end generate;
                     l0a2 : if (l = (n-1)) generate -- last column 
                         uu : full_adder port map (fa_A => '0', fa_B => ands((n*2)-1), fa_Cin => c(l-1), fa_Sum => sums(l), fa_Cout => c(l) );       
                     end generate;
-                end generate;
+                end generate l0a;
             end generate in1;
             
             in2: if (k > 0) generate -- all other rows
@@ -68,6 +80,7 @@ architecture UnsignedNBitMultiplier_arch of UnsignedNBitMultiplier is
                     end generate;   
                 end generate;
             end generate in2;
+            
         end generate;
         
      
