@@ -10,6 +10,6 @@ end entity;
 
 architecture half_adder_arch of half_adder is
     begin
-	ha_Sum <= ha_A xor ha_B after 1 ps;
-	ha_Cout <= ha_A and ha_B after 1 ps;
+        ha_Sum <= ha_A xor ha_B;
+        ha_Cout <= ha_A and ha_B;
 end architecture;
