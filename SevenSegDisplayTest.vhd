@@ -1,4 +1,14 @@
-
+----------------------------------------------------------------------
+-- File name   : SevenSegDisplayTest.vhd
+--
+-- Project     : SevenSegDisplayTest
+--
+-- Description : Top file implementing 32-bit hardware multiplier on
+--               a Basys 3 board. 
+--
+-- Author(s)   : Zachary Becker
+--               bitbytebitco@gmail.com
+----------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.std_logic_unsigned.all;
