@@ -1,7 +1,7 @@
 # Clock signal
 set_property PACKAGE_PIN W5 [get_ports clock_100Mhz]       
  set_property IOSTANDARD LVCMOS33 [get_ports clock_100Mhz]
-set_property PACKAGE_PIN R2 [get_ports reset]     
+set_property PACKAGE_PIN R3 [get_ports reset]     
         set_property IOSTANDARD LVCMOS33 [get_ports reset]
 
 
@@ -28,10 +28,10 @@ set_property PACKAGE_PIN W2 [get_ports {an_conf[0]}]
 	set_property IOSTANDARD LVCMOS33 [get_ports {an_conf[0]}]
 set_property PACKAGE_PIN U1 [get_ports {an_conf[1]}]
 	set_property IOSTANDARD LVCMOS33 [get_ports {an_conf[1]}]
-#set_property PACKAGE_PIN T1 [get_ports {an_conf[2]}]
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an_conf[2]}]
-#set_property PACKAGE_PIN R2 [get_ports {an_conf[3]}]
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an_conf[3]}]
+set_property PACKAGE_PIN T1 [get_ports {i_display[0]}]
+	set_property IOSTANDARD LVCMOS33 [get_ports {i_display[0]}]
+set_property PACKAGE_PIN R2 [get_ports {i_display[1]}]
+	set_property IOSTANDARD LVCMOS33 [get_ports {i_display[1]}]
 
 
 ## 7 segment display
