@@ -10,6 +10,7 @@ entity SevenSegDisplayTest is
            reset : in std_logic;
            an      : out std_logic_vector(3 downto 0);
            an_conf : in std_logic_vector(1 downto 0);
+           i_display : in std_logic_vector(1 downto 0);
            seg     : out std_logic_vector(6 downto 0));
 end SevenSegDisplayTest;
 
@@ -18,10 +19,11 @@ architecture Behavioral of SevenSegDisplayTest is
     signal hex : std_logic_vector( 3 downto 0);
     signal refresh_counter: STD_LOGIC_VECTOR (19 downto 0);
     signal LED_activating_counter: std_logic_vector(1 downto 0);
-    signal displayed_number: STD_LOGIC_VECTOR (15 downto 0) := x"0000";
-    signal sum: STD_LOGIC_VECTOR (15 downto 0) := x"0000";
+    
+    signal A, B, C, D, offset: integer := 0;
 
-    constant n : integer := 8; -- # of Bits in Multiplier
+    constant n : integer := 32; -- # of Bits in Multiplier
+    signal displayed_number: STD_LOGIC_VECTOR ((n-1) downto 0) := std_logic_vector(to_unsigned(0,n));
     signal w_A, w_B : std_logic_vector( (n-1) downto 0);
     signal w_P : std_logic_vector( ((n*2)-1) downto 0);
     
@@ -60,84 +62,85 @@ begin
          
     LED_activating_counter <= refresh_counter(19 downto 18);
     
-    displayed_number <= x"00" & sw;
-    sum <= displayed_number + x"05";
+    displayed_number <= x"FFFFFF" & sw;
     
-    w_A <= sw;
-    w_B <= x"FF";   
+    w_A <= displayed_number;
+    w_B <= x"FFFFFFFF";
 --    w_B <= std_logic_vector(to_unsigned(2,n));
 
 
     CHAR : process(hex)
         begin
         
-            case an_conf is
-                when "00" => 
-                    case LED_activating_counter is
-                        when "00" =>
-                            an <= "0111"; 
-                            -- activate LED1 and Deactivate LED2, LED3, LED4
-                            hex <= displayed_number(15 downto 12);
-                            -- the first hex digit of the 16-bit number
-                        when "01" =>
-                            an <= "1011"; 
-                            -- activate LED2 and Deactivate LED1, LED3, LED4
-                            hex <= displayed_number(11 downto 8);
-                            -- the second hex digit of the 16-bit number
-                        when "10" =>
-                            an <= "1101"; 
-                            -- activate LED3 and Deactivate LED2, LED1, LED4
-                            hex <= displayed_number(7 downto 4);
-                            -- the third hex digit of the 16-bit number
-                        when "11" =>
-                            an <= "1110"; 
-                            -- activate LED4 and Deactivate LED2, LED3, LED1
-                            hex <= displayed_number(3 downto 0);
-                    end case;
+            case i_display is
+                when "00" =>
+                    offset <= 0;
                 when "01" => 
-                    case LED_activating_counter is
-                        when "00" =>
-                            an <= "0111"; 
-                            -- activate LED1 and Deactivate LED2, LED3, LED4
-                            hex <= sum(15 downto 12);
-                            -- the first hex digit of the 16-bit number
-                        when "01" =>
-                            an <= "1011"; 
-                            -- activate LED2 and Deactivate LED1, LED3, LED4
-                            hex <= sum(11 downto 8);
-                            -- the second hex digit of the 16-bit number
-                        when "10" =>
-                            an <= "1101"; 
-                            -- activate LED3 and Deactivate LED2, LED1, LED4
-                            hex <= sum(7 downto 4);
-                            -- the third hex digit of the 16-bit number
-                        when "11" =>
-                            an <= "1110"; 
-                            -- activate LED4 and Deactivate LED2, LED3, LED1
-                            hex <= sum(3 downto 0);
-                    
-                    end case;
+                    offset <= 16;
                 when "10" => 
+                    offset <= 32;
+                when "11" => 
+                    offset <= 48;
+            end case;
+        
+            A <= 3 + offset;
+            B <= A + 4;
+            C <= B + 4;
+            D <= C + 4;
+        
+            case an_conf is
+                when "00" =>    -- Display SW number
+                                      
                     case LED_activating_counter is
                         when "00" =>
                             an <= "0111"; 
                             -- activate LED1 and Deactivate LED2, LED3, LED4
-                            hex <= w_P(15 downto 12);
+                            hex <= displayed_number(D downto D-3);
                             -- the first hex digit of the 16-bit number
                         when "01" =>
                             an <= "1011"; 
                             -- activate LED2 and Deactivate LED1, LED3, LED4
-                            hex <= w_P(11 downto 8);
+                            hex <= displayed_number(C downto C-3);
                             -- the second hex digit of the 16-bit number
                         when "10" =>
                             an <= "1101"; 
                             -- activate LED3 and Deactivate LED2, LED1, LED4
-                            hex <= w_P(7 downto 4);
+                            hex <= displayed_number(B downto B-3);
                             -- the third hex digit of the 16-bit number
                         when "11" =>
                             an <= "1110"; 
                             -- activate LED4 and Deactivate LED2, LED3, LED1
-                            hex <= w_P(3 downto 0);
+                            hex <= displayed_number(A downto A-3);
+                    end case;
+                when "01" =>    -- Display --                    
+                when "10" =>    -- Display Multiplication
+                
+                    -- 31 30 29 28 | 27 26 25 24 | 23 22 21 20 | 19 18 17 16 | 15 14 13 12 | 11 10 9 8 | 7 6 5 4 | 3 2 1 0 
+                    
+                    case LED_activating_counter is
+                        when "00" =>
+                            an <= "0111"; 
+                            -- activate LED1 and Deactivate LED2, LED3, LED4                        
+--                            hex <= w_P(15 downto 12);
+                            hex <= w_P(D downto D-3);
+                            -- the first hex digit of the 16-bit number
+                        when "01" =>
+                            an <= "1011"; 
+                            -- activate LED2 and Deactivate LED1, LED3, LED4
+--                            hex <= w_P(11 downto 8);
+                            hex <= w_P(C downto C-3);
+                            -- the second hex digit of the 16-bit number
+                        when "10" =>
+                            an <= "1101"; 
+                            -- activate LED3 and Deactivate LED2, LED1, LED4
+--                            hex <= w_P(7 downto 4);
+                            hex <= w_P(B downto B-3);
+                            -- the third hex digit of the 16-bit number
+                        when "11" =>
+                            an <= "1110"; 
+                            -- activate LED4 and Deactivate LED2, LED3, LED1
+--                            hex <= w_P(3 downto 0);
+                            hex <= w_P(A downto A-3);
                     
                     end case;
                 when others => 
@@ -153,7 +156,7 @@ begin
                             hex <= x"0";
                         when "11" =>
                             an <= "1110"; 
-                            hex <= sum(3 downto 0);
+                            hex <= x"0";
                     end case;
                 end case;
 end process;
